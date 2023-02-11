@@ -87,32 +87,70 @@ def depthFirstSearch(problem):
     print("Start's successors:", problem.getSuccessors(problem.getStartState()))
     """
     "*** YOUR CODE HERE ***"
-    Fringe = util.Stack()
-    visited = []
-    Fringe.push((problem.getStartState(),[]))
-    while Fringe.isEmpty() != True:
-        popState, popDirection = Fringe.pop()
-        if popState in visited:
+    stack = util.Stack()
+    stack.push((problem.getStartState(), []))
+    passed = []
+    while not stack.isEmpty():
+        temp = stack.pop()
+        pos = temp[0]
+        path = temp[1]
+        if pos in passed:
             continue
-        if problem.isGoalState(popState):
-            return popDirection
-        visited.append(popState)
-        for state, direction, cost in problem.getSuccessors(popState):
-            if state in visited:
+        if problem.isGoalState(pos):
+            return path
+        passed.append(pos)
+        for child_state, child_action, child_cost in problem.getSuccessors(pos):
+            if child_state in passed:
                 continue
-            Fringe.push((state, popDirection+[direction]))
-    return []
-    util.raiseNotDefined()
+            path.append(child_action)
+            stack.push((child_state, path[:]))
+            path.pop()
 
 def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    que = util.Queue()
+    que.push((problem.getStartState(), []))
+    passed = []
+    while not que.isEmpty():
+        temp = que.pop()
+        pos = temp[0]
+        path = temp[1]
+        if pos in passed:
+            continue
+        if problem.isGoalState(pos):
+            return path
+        passed.append(pos)
+        for child_state, child_action, child_cost in problem.getSuccessors(pos):
+            if child_state in passed:
+                continue
+            path.append(child_action)
+            que.push((child_state, path[:]))
+            path.pop()
 
 def uniformCostSearch(problem):
     """Search the node of least total cost first."""
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    pq = util.PriorityQueue()
+    pq.push((problem.getStartState(), [], 0), 0)
+    passed = []
+    while not pq.isEmpty():
+        temp = pq.pop()
+        pos = temp[0]
+        path = temp[1]
+        cost = temp[2]
+        if pos in passed:
+            continue
+        if problem.isGoalState(pos):
+            return path
+        passed.append(pos)
+        for child_state, child_action, child_cost in problem.getSuccessors(pos):
+            if child_state in passed:
+                continue
+            path.append(child_action)
+            child_cost += cost
+            pq.push((child_state, path[:], child_cost), child_cost)
+            path.pop()
 
 def nullHeuristic(state, problem=None):
     """
@@ -124,7 +162,27 @@ def nullHeuristic(state, problem=None):
 def aStarSearch(problem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    pq = util.PriorityQueue()
+    pq.push((problem.getStartState(), [], 0), 0)
+    passed = []
+    while not pq.isEmpty():
+        temp = pq.pop()
+        pos = temp[0]
+        path = temp[1]
+        cost = temp[2]
+        if pos in passed:
+            continue
+        if problem.isGoalState(pos):
+            return path
+        passed.append(pos)
+        for child_state, child_action, child_cost in problem.getSuccessors(pos):
+            if child_state in passed:
+                continue
+            path.append(child_action)
+            child_cost += cost
+            value = child_cost + heuristic(child_state, problem)
+            pq.push((child_state, path[:], child_cost), value)
+            path.pop()
 
 
 # Abbreviations
