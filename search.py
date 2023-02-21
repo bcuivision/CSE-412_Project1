@@ -116,6 +116,10 @@ def breadthFirstSearch(problem):
         temp = que.pop()
         pos = temp[0]
         path = temp[1]
+
+        # print("bfs:")
+        # print(pos)
+        
         if pos in passed:
             continue
         if problem.isGoalState(pos):

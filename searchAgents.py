@@ -288,7 +288,7 @@ class CornersProblem(search.SearchProblem):
         # Please add any code here which you would like to use
         # in initializing the problem
         "*** YOUR CODE HERE ***"
-        self.cornerState = [False, False, False, False];
+        self.cornerState = [];
 
     def getStartState(self):
         """
@@ -306,13 +306,7 @@ class CornersProblem(search.SearchProblem):
         Returns whether this search state is a goal state of the problem.
         """
         "*** YOUR CODE HERE ***"
-
-        print(type (state[1]))
-        print(type (state[1]))
-
-        return False not in state[1]
-
-
+        return len(state[1]) == 4
         util.raiseNotDefined()
 
     def getSuccessors(self, state):
@@ -343,21 +337,14 @@ class CornersProblem(search.SearchProblem):
 
             if(not hitsWall):
                 nextState = (nextx, nexty)
-                nextCornerState = state[1]
+                nextCornerState = list(state[1])
                 "update new corner state accordingly"
 
-                if nextState == self.corners[0]:
-                    nextCornerState[0] = True
-                if nextState == self.corners[1]:
-                    nextCornerState[1] = True
-                if nextState == self.corners[2]:
-                    nextCornerState[2] = True
-                if nextState == self.corners[3]:
-                    nextCornerState[3] = True
+                if nextState not in nextCornerState and nextState in self.corners:
+                    nextCornerState.append(nextState)
 
-                s = [nextState,action, 1]
+                s = [(nextState, nextCornerState),action, 1]
                 successors.append(s)
-
 
         self._expanded += 1 # DO NOT CHANGE
         return successors
@@ -393,8 +380,24 @@ def cornersHeuristic(state, problem):
     walls = problem.walls # These are the walls of the maze, as a Grid (game.py)
 
     "*** YOUR CODE HERE ***"
-    return 0 # Default to trivial solution
+    pos = state[0]
+    cornerState = state[1]
+    cornersToCover = []
 
+    if len(cornerState) == 4:
+        return 0
+
+    for c in corners:
+        if c not in cornerState:
+            cornersToCover.append(c)
+
+    h = 0
+
+    for c in cornersToCover:
+        h = max(util.manhattanDistance(c,pos), h)
+
+    return h
+    
 class AStarCornersAgent(SearchAgent):
     "A SearchAgent for FoodSearchProblem using A* and your foodHeuristic"
     def __init__(self):
