@@ -393,10 +393,19 @@ def cornersHeuristic(state, problem):
 
     h = 0
 
-    for c in cornersToCover:
-        h = max(util.manhattanDistance(c,pos), h)
+    while len(cornersToCover) > 0:
+        pq = util.PriorityQueue()
+        for c in cornersToCover:
+            temp_h = util.manhattanDistance(c, pos)
+            pq.push((c, temp_h), temp_h)
+        # Find nearest corner
+        newPos, sub_h = pq.pop()
+        cornersToCover.remove(newPos)
+        pos = newPos[:]
+        h += sub_h
 
     return h
+
     
 class AStarCornersAgent(SearchAgent):
     "A SearchAgent for FoodSearchProblem using A* and your foodHeuristic"
